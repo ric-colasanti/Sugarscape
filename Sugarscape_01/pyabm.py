@@ -111,14 +111,14 @@ class Cell:
         self.states[Cell.t_next][state]=0
 
     def diffuse(self,state,fraction):
-        amount = self.states[Cell.t_now][state]
+        amount = self.states[Cell.t_now][state]*fraction
         self.states[Cell.t_next][state]+= self.states[Cell.t_now][state]-amount
         t_amount = amount
         amount = amount/self.number_neighbours
         for cell in self.neighbours:
             cell.states[Cell.t_next][state]+=amount
             t_amount-=amount
-        self.states[Cell.t_next][state]+=t_amount
+        #self.states[Cell.t_next][state]+=t_amount
 
     def addNeighbour(self,cell):
       self.neighbours.append(cell)

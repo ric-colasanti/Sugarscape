@@ -53,7 +53,7 @@ def draw(world,state,value,discreet=False):
 def main () :
   looping = True
 
-  world = World(30, ["resource"],[0])
+  world = World(30, ["resource"],[0],n_type=4)
   #set center cell resource to 500
   world.setCell(15, 15, "resource", 500)
   world.update()
