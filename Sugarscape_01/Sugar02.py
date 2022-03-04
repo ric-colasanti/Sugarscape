@@ -50,6 +50,18 @@ def draw(world,state,value,discreet=False):
         pygame.draw.circle(WINDOW, agent.color, (x_pos,y_pos),int(box_size/2))
 
 # The main function that controls the game
+def iterate(world):
+    for agent in world.agents:
+            # what is the signle at the cell that agent occupies
+            state = agent.getState("signal")
+            if state == 1:
+                agent.setState("signal",0)
+                agent.right()
+            else:
+                agent.setState("signal",1)
+                agent.left()
+
+
 def main () :
     looping = True
     world = World(120, ["signal"],[0],n_type=4)
@@ -65,15 +77,8 @@ def main () :
                 sys.exit()
         
         # Processing
-        for agent in world.agents:
-            # what is the signle at the cell that agent occupies
-            state = agent.getState("signal")
-            if state == 1:
-                agent.setState("signal",0)
-                agent.right()
-            else:
-                agent.setState("signal",1)
-                agent.left()
+        iterate(world)
+        
         
         # This section will be built out later
     
