@@ -69,6 +69,8 @@ def main () :
     # Processing
     world.diffuse("resource",0.5)
     world.update()
+    #pos = world.getCell(15,15)
+    #print(pos.getState("resource"))
     
     # This section will be built out later
  
