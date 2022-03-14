@@ -98,6 +98,9 @@ class Cell:
     def setNState(self,state,value):
         self.states[Cell.t_now][state]=value
 
+    def setAState(self,state,value):
+        self.states[Cell.t_now][state]=value
+        self.states[Cell.t_next][state]=value
 
 
     def getState(self,state):
