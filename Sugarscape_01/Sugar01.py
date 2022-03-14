@@ -54,7 +54,7 @@ def draw(world,state,value,discreet=False):
 def main () :
   looping = True
 
-  world = World(50, ["sugar"],[0],n_type=4)
+  world = World(50, ["sugar","sugar-capacity"],[0,0],n_type=4)
   #set center cell sugar to 500
   world.setCell(13, 13, "sugar", 4)
   for cell in world.cells:
@@ -62,10 +62,10 @@ def main () :
       if value1<0 : value1=0
       value2 = int((25-math.sqrt(math.pow((cell.x_pos-13),2)+math.pow((cell.y_pos-32),2)))/5)
       if value2<0 : value2=0
-      cell.setState("sugar",max(value1,value2))
-  world.setCell(13, 32, "sugar", 4)
-  world.setCell(32, 13, "sugar", 4)
+      #cell.setState("sugar",max(value1,value2))
+      cell.setAState("sugar-capacity",max(value1,value2))
   world.update()
+  sugar_update = 1
   
   # The main game loop
   while looping :
@@ -79,7 +79,8 @@ def main () :
     #world.diffuse("sugar",0.5)
     for cell in world.cells:
         value = cell.getState("sugar")
-        cell.setState("sugar",value)
+        c_value = cell.getState("sugar-capacity")
+        cell.setState("sugar",min(value+sugar_update,c_value))
     world.update()
     #pos = world.getCell(15,15)
     #print(pos.getState("sugar"))
