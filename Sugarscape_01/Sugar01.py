@@ -59,7 +59,9 @@ def main () :
   world.setCell(13, 13, "sugar", 4)
   for cell in world.cells:
       value1 = int((25-math.sqrt(math.pow((cell.x_pos-32),2)+math.pow((cell.y_pos-13),2)))/5)
+      if value1<0 : value1=0
       value2 = int((25-math.sqrt(math.pow((cell.x_pos-13),2)+math.pow((cell.y_pos-32),2)))/5)
+      if value2<0 : value2=0
       cell.setState("sugar",max(value1,value2))
   world.setCell(13, 32, "sugar", 4)
   world.setCell(32, 13, "sugar", 4)
@@ -86,7 +88,7 @@ def main () :
  
     # Render elements of the game
     WINDOW.fill(BACKGROUND)
-    draw( world, "sugar", 5,discreet=False)
+    draw( world, "sugar", 4,discreet=False)
     pygame.display.update()
     fpsClock.tick(FPS)
  
