@@ -1,3 +1,4 @@
+import math
 import pygame, sys, random
 from pygame.locals import *
 import random as rnd
@@ -9,7 +10,7 @@ from pyabm import World, Cell, Agent
 pygame.init()
  
 # Colours
-BACKGROUND = (0, 0, 0)
+BACKGROUND = (255, 255, 255)
 RED = (255, 30, 70)
 BLUE = (10, 20, 200)
 GREEN = (50, 230, 40)
@@ -37,12 +38,12 @@ def draw(world,state,value,discreet=False):
               pygame.draw.rect(WINDOW, GREEN, box)
         else:
             amount = cell.getState(state)
-            r = int(255*(amount/value))
+            r = 255-int(255*(amount/value))
             if r>255:
                 r=255
             if r<0:
                 r=0
-            pygame.draw.rect(WINDOW,(r,0,0),box)
+            pygame.draw.rect(WINDOW,(255,255,r),box)
     for agent in world.agents:
         cell = agent.getHome()
         x_pos = int(cell.x_pos*ratio+(ratio/2))
@@ -53,9 +54,15 @@ def draw(world,state,value,discreet=False):
 def main () :
   looping = True
 
-  world = World(30, ["resource"],[0],n_type=4)
-  #set center cell resource to 500
-  world.setCell(15, 15, "resource", 500)
+  world = World(50, ["sugar"],[0],n_type=4)
+  #set center cell sugar to 500
+  world.setCell(13, 13, "sugar", 4)
+  for cell in world.cells:
+      value1 = int((25-math.sqrt(math.pow((cell.x_pos-32),2)+math.pow((cell.y_pos-13),2)))/5)
+      value2 = int((25-math.sqrt(math.pow((cell.x_pos-13),2)+math.pow((cell.y_pos-32),2)))/5)
+      cell.setState("sugar",max(value1,value2))
+  world.setCell(13, 32, "sugar", 4)
+  world.setCell(32, 13, "sugar", 4)
   world.update()
   
   # The main game loop
@@ -67,16 +74,19 @@ def main () :
         sys.exit()
     
     # Processing
-    world.diffuse("resource",0.5)
+    #world.diffuse("sugar",0.5)
+    for cell in world.cells:
+        value = cell.getState("sugar")
+        cell.setState("sugar",value)
     world.update()
     #pos = world.getCell(15,15)
-    #print(pos.getState("resource"))
+    #print(pos.getState("sugar"))
     
     # This section will be built out later
  
     # Render elements of the game
     WINDOW.fill(BACKGROUND)
-    draw( world, "resource", 1,discreet=False)
+    draw( world, "sugar", 5,discreet=False)
     pygame.display.update()
     fpsClock.tick(FPS)
  
