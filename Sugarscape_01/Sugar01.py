@@ -58,14 +58,16 @@ def main () :
   #set center cell sugar to 500
   world.setCell(13, 13, "sugar", 4)
   for cell in world.cells:
-      value1 = int((25-math.sqrt(math.pow((cell.x_pos-32),2)+math.pow((cell.y_pos-13),2)))/5)
+      value1 = ((25-math.sqrt(math.pow((cell.x_pos-32),2)+math.pow((cell.y_pos-13),2)))/5)
       if value1<0 : value1=0
-      value2 = int((25-math.sqrt(math.pow((cell.x_pos-13),2)+math.pow((cell.y_pos-32),2)))/5)
+      value2 = ((25-math.sqrt(math.pow((cell.x_pos-13),2)+math.pow((cell.y_pos-32),2)))/5)
       if value2<0 : value2=0
-      #cell.setState("sugar",max(value1,value2))
+      cell.setState("sugar",max(value1,value2))
       cell.setAState("sugar-capacity",max(value1,value2))
   world.update()
   sugar_update = 1
+  for _ in range(40):
+    world.addAgent(rnd.randint(0,49),rnd.randint(0,49),color='red',vision=rnd.randint(1,3))
   
   # The main game loop
   while looping :
@@ -77,17 +79,25 @@ def main () :
     
     # Processing
     #world.diffuse("sugar",0.5)
+    for agent in world.agents:
+        res = agent.getState("sugar")
+        if res >= agent.vision:
+            res -= agent.vision
+            agent.setState("sugar",res)
+            agent.moveBest("sugar")
     for cell in world.cells:
         value = cell.getState("sugar")
         c_value = cell.getState("sugar-capacity")
         cell.setState("sugar",min(value+sugar_update,c_value))
-    world.update()
+    
+
     #pos = world.getCell(15,15)
     #print(pos.getState("sugar"))
     
     # This section will be built out later
  
     # Render elements of the game
+    world.update()
     WINDOW.fill(BACKGROUND)
     draw( world, "sugar", 4,discreet=False)
     pygame.display.update()

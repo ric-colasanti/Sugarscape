@@ -1,8 +1,9 @@
 import random
 class Agent:
-    def __init__(self,color):
+    def __init__(self,color,vision):
         self.home = None
         self.color  = color
+        self.vision = vision
         self.point=0
 
     def right(self):
@@ -36,8 +37,20 @@ class Agent:
         self.move(cell)
 
     def moveBest(self,state):
-        cell = self.home.search(state)
-        self.move(cell)
+#        cell = self.home.search(state)
+        pos = self.home
+        max = pos.getState(state)
+        new_pos = pos
+        for i in range(4):
+            pos = self.home
+            for j in range(self.vision):
+                pos = pos.neighbours[i]
+                if pos.isOccupied() == False:
+                    res = pos.getState(state)
+                    if res>max or ((res==max) and (random.random()<=0.5)):
+                        new_pos = pos
+                        max = res
+        self.move(new_pos)
 
     def getState(self,state):
         return self.home.getState(state)
@@ -175,9 +188,9 @@ class World:
                 cell.addNeighbour(self.cells[pos])
                 
 
-    def addAgent(self,x,y,color='blue'):
+    def addAgent(self,x,y,color='blue',vision=1):
         pos = y*self.size+x
-        agent = Agent(color)
+        agent = Agent(color,vision)
         self.agents.append(agent)
         self.cells[pos].setAgent(agent)
         
