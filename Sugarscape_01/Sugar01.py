@@ -16,10 +16,11 @@ BLUE = (10, 20, 200)
 GREEN = (50, 230, 40)
  
 # Game Setup
-FPS = 60
+FPS = 1
 fpsClock = pygame.time.Clock()
 WINDOW_WIDTH = 600
 WINDOW_HEIGHT = 600
+cols=['','red','green','blue','orange','purple','black']
  
 WINDOW = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.set_caption('Sugarscape-01')
@@ -48,7 +49,8 @@ def draw(world,state,value,discreet=False):
         cell = agent.getHome()
         x_pos = int(cell.x_pos*ratio+(ratio/2))
         y_pos = int(cell.y_pos*ratio+(ratio/2))
-        pygame.draw.circle(WINDOW, agent.color, (x_pos,y_pos),int(box_size/2))
+        pygame.draw.circle(WINDOW, cols[agent.vision], (x_pos,y_pos),int(box_size/2))
+        pygame.draw.circle(WINDOW, cols[agent.metabolism], (x_pos,y_pos),int(box_size/3))
 
 # The main function that controls the game
 def main () :
@@ -58,16 +60,16 @@ def main () :
   #set center cell sugar to 500
   world.setCell(13, 13, "sugar", 4)
   for cell in world.cells:
-      value1 = ((25-math.sqrt(math.pow((cell.x_pos-32),2)+math.pow((cell.y_pos-13),2)))/5)
+      value1 = int((25-math.sqrt(math.pow((cell.x_pos-32),2)+math.pow((cell.y_pos-13),2)))/5)
       if value1<0 : value1=0
-      value2 = ((25-math.sqrt(math.pow((cell.x_pos-13),2)+math.pow((cell.y_pos-32),2)))/5)
+      value2 = int((25-math.sqrt(math.pow((cell.x_pos-13),2)+math.pow((cell.y_pos-32),2)))/5)
       if value2<0 : value2=0
       cell.setState("sugar",max(value1,value2))
       cell.setAState("sugar-capacity",max(value1,value2))
   world.update()
-  sugar_update = 1
-  for _ in range(40):
-    world.addAgent(rnd.randint(0,49),rnd.randint(0,49),color='red',vision=rnd.randint(1,3))
+  sugar_update = 5
+  for _ in range(400):
+    world.addAgent(rnd.randint(0,49),rnd.randint(0,49),color='red',vision=random.randint(1,6),metabolism=random.randint(1,4),res=random.randint(1,4))
   
   # The main game loop
   while looping :
@@ -80,11 +82,23 @@ def main () :
     # Processing
     #world.diffuse("sugar",0.5)
     for agent in world.agents:
+        agent.moveBest("sugar")
         res = agent.getState("sugar")
-        if res >= agent.vision:
-            res -= agent.vision
-            agent.setState("sugar",res)
-            agent.moveBest("sugar")
+        if res >= agent.metabolism:
+            res -= agent.metabolism
+            agent.res+=res
+            agent.setState("sugar",0)
+            
+        else:
+            agent.res+=res
+            agent.setState("sugar",0)
+            if agent.res>=agent.metabolism:
+                agent.res-=agent.metabolism
+            else:
+                world.agents.remove(agent)
+
+
+
     for cell in world.cells:
         value = cell.getState("sugar")
         c_value = cell.getState("sugar-capacity")
